@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial Cubo de Rubik - Cube Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 2rem;
+            color: #ffd700;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(to right, #ffd700, #ff8c00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .menu-icon {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+        
+        .nav-list {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        .nav-list li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-list li a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .tutorial-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        
+        .tutorial-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .tutorial-title {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #ffd700, #ff8c00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .tutorial-subtitle {
+            font-size: 1.5rem;
+            color: #ffd700;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .cube-section {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cube-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
+            z-index: -1;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 2rem;
+        }
+        
+        .section-icon {
+            font-size: 2.5rem;
+            color: #ffd700;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #ffd700, #ff8c00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .step {
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border-left: 4px solid #ff8c00;
+        }
+        
+        .step-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            color: #ffd700;
+        }
+        
+        .step-title i {
+            color: #ff8c00;
+        }
+        
+        .step-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+        
+        .algorithm {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 1.2rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: #ffd700;
+            margin: 1rem 0;
+        }
+        
+        .algorithm-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #ff8c00;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        th {
+            background: rgba(255, 140, 0, 0.3);
+            color: #ffd700;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: rgba(255, 215, 0, 0.1);
+        }
+        
+        .tip-box {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid #ffd700;
+            padding: 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin: 2rem 0;
+        }
+        
+        .tip-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #ffd700;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #ff8c00, #ffd700);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(255, 140, 0, 0.3);
+            margin-top: 0.5rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(255, 140, 0, 0.5);
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+        }
+        
+        .resources {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .resource-card {
+            flex: 1;
+            min-width: 250px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-5px);
+            border-color: #ff8c00;
+        }
+        
+        .resource-title {
+            font-size: 1.3rem;
+            color: #ffd700;
+            margin-bottom: 0.5rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.7);
+            margin-top: 3rem;
+        }
+        
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .social-icons a {
+            color: #ffd700;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            transform: translateY(-5px);
+            color: #ff8c00;
+        }
+        
+        .animation-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .floating-cube {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 3px;
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .tutorial-title {
+                font-size: 2.8rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .step-title {
+                font-size: 1.5rem;
+            }
+            
+            .cube-section {
+                padding: 1.8rem;
+            }
+            
+            .menu-icon {
+                display: block;
+            }
+            
+            .nav-list {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                flex-direction: column;
+                background: rgba(0, 0, 0, 0.9);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                padding: 1rem 0;
+            }
+            
+            .nav-list.active {
+                left: 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .tutorial-title {
+                font-size: 2.2rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
+            .step-title {
+                font-size: 1.3rem;
+            }
+            
+            .algorithm {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animation-container" id="floating-cubes"></div>
+    
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-cube"></i>
+            <h1>CUBE CENTER</h1>
+        </div>
+        <div class="menu-icon" id="menu-icon">
+            <i class="fas fa-bars"></i>
+        </div>
+        <ul class="nav-list" id="nav-list">
+            <li><a href="#"><i class="fas fa-home"></i> Inicio</a></li>
+            <!-- Productos eliminado según solicitud -->
+            <li><a href="#"><i class="fas fa-stopwatch"></i> Tiempos</a></li>
+            <li><a href="#"><i class="fas fa-graduation-cap"></i> Tutoriales</a></li>
+            <li><a href="#"><i class="fas fa-sign-in-alt"></i> Inicia sesión</a></li>
+        </ul>
+    </nav>
+    
+    <main class="tutorial-container">
+        <div class="tutorial-header">
+            <h1 class="tutorial-title">Tutoriales</h1>
+            <p class="tutorial-subtitle">Aprende a resolver el cubo de Rubik con nuestros tutoriales paso a paso para principiantes y avanzados. Cubrimos desde el 2x2 hasta el 4x4.</p>
+        </div>
+        
+        <!-- Notación Básica -->
+        <div class="cube-section">
+            <div class="section-header">
+                <i class="fas fa-pen section-icon"></i>
+                <h2 class="section-title">Notación Básica</h2>
+            </div>
+            
+            <div class="step">
+                <div class="step-content">
+                    <p>Para seguir los tutoriales, es esencial entender la notación estándar del cubo de Rubik:</p>
+                    <ul style="margin: 1.5rem 0; padding-left: 2rem;">
+                        <li><strong>Letras:</strong> F (Front), B (Back), R (Right), L (Left), U (Up), D (Down)</li>
+                        <li><strong>Apostrofe ( ' ):</strong> Giro antihorario (ej: R')</li>
+                        <li><strong>Número 2:</strong> 180° (ej: U2)</li>
+                        <li><strong>Minúsculas (4x4):</strong> Dos capas juntas (ej: u = capa superior + segunda capa)</li>
+                    </ul>
+                    <p>Esta notación es universal y te permitirá seguir cualquier tutorial o algoritmo.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cubo 2x2 -->
+        <div class="cube-section">
+            <div class="section-header">
+                <i class="fas fa-th section-icon"></i>
+                <h2 class="section-title">🔷 Cubo 2x2</h2>
+            </div>
+            
+            <div class="step">
+                <h3 class="step-title"><i class="fas fa-cube"></i> Método Principiantes (Capas)</h3>
+                <div class="step-content">
+                    <p>El cubo 2x2 es perfecto para principiantes ya que solo tiene esquinas.</p>
+                    
+                    <h4>1. Cara Blanca</h4>
+                    <p>Resuelve una cara completa intuitivamente (sin algoritmos).</p>
+                    
+                    <h4>2. Cara Amarilla</h4>
+                    <div class="algorithm">
+                        <div class="algorithm-title">Algoritmo Orientación:</div>
+                        <div>R U R' U R U2 R'</div>
+                        <p>Repite hasta que todas las piezas amarillas queden arriba.</p>
+                    </div>
+                    
+                    <h4>3. Alinear Colores Laterales</h4>
+                    <div class="algorithm">
+                        <div class="algorithm-title">Algoritmo Permutación:</div>
+                        <div>U R U' L' U R' U' L</div>
+                        <p>Gira la capa superior hasta que 1 esquina coincida, aplica según necesidad.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cubo 3x3 -->
+        <div class="cube-section">
+            <div class="section-header">
+                <i class="fas fa-th-large section-icon"></i>
+                <h2 class="section-title">🔶 Cubo 3x3</h2>
+            </div>
+            
+            <div class="step">
+                <h3 class="step-title"><i class="fas fa-layer-group"></i> Método Capas (LBL)</h3>
+                <div class="step-content">
+                    <h4>1. Cruz Blanca (Inferior)</h4>
+                    <p>Intuitivo: Alinea aristas blancas con centros laterales.</p>
+                    
+                    <h4>2. Esquinas Blancas</h4>
+                    <div class="algorithm">
+                        <div class="algorithm-title">Algoritmo:</div>
+                        <div>R U R' U'</div>
+                        <p>Repite hasta encajar todas las esquinas.</p>
+                    </div>
+                    
+                    <h4>3. Capa Media (Aristas)</h4>
+                    <div class="algorithm">
+                        <div class="algorithm-title">Derecha:</div>
+                        <div>U R U' R' U' F' U F</div>
+                    </div>
+                    <div class="algorithm">
+                        <div class="algorithm-title">Izquierda:</div>
+                        <div>U' L' U L U F U' F'</div>
+                    </div>
+                    
+                    <h4>4. Cruz Amarilla</h4>
+                    <div class="algorithm">
+                        <div class="algorithm-title">Punto → L → Cruz:</div>
+                        <div>F R U R' U' F'</div>
+                        <p>Aplica 1-3 veces según patrón.</p>
+                    </div>
+                    
+                    <h4>5. Orientar Esquinas (OLL)</h4>
+                    <div class="algorithm">
+                        <div class="algorithm-title">Clásico (Sune):</div>
+                        <div>R U R' U R U2 R'</div>
+                    </div>
+                    
+                    <h4>6. Permutar Esquinas (PLL)</h4>
+                    <div class="algorithm">
+                        <div class="algorithm-title">Intercambio Horario:</div>
+                        <div>R' F R' B2 R F' R' B2 R2</div>
+                    </div>
+                    <div class="algorithm">
+                        <div class="algorithm-title">Intercambio Antihorario:</div>
+                        <div>R2 B2 R F R' B2 R F' R</div>
+                    </div>
+                    
+                    <h4>7. Permutar Aristas (PLL)</h4>
+                    <div class="algorithm">
+                        <div class="algorithm-title">Ciclo Horario:</div>
+                        <div>R U' R U R U R U' R' U' R2</div>
+                    </div>
+                    <div class="algorithm">
+                        <div class="algorithm-title">Ciclo Antihorario:</div>
+                        <div>R2 U R U R' U' R' U' R' U R'</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cubo 4x4 -->
+        <div class="cube-section">
+            <div class="section-header">
+                <i class="fas fa-border-all section-icon"></i>
+                <h2 class="section-title">⬛ Cubo 4x4</h2>
+            </div>
+            
+            <div class="step">
+                <h3 class="step-title"><i class="fas fa-puzzle-piece"></i> Método Principiantes (Reducción)</h3>
+                <div class="step-content">
+                    <h4>1. Centros (6 colores)</h4>
+                    <p>Intuitivo: Forma bloques 2x2 en cada centro.</p>
+                    
+                    <h4>2. Aristas (12 pares)</h4>
+                    <div class="algorithm">
+                        <div class="algorithm-title">Algoritmo Básico:</div>
+                        <div>u' R U R' F R' F' R u</div>
+                        <p>Ubica piezas en U y D, aplica para emparejar.</p>
+                    </div>
+                    
+                    <h4>3. Resolver como 3x3</h4>
+                    <p>Usa método LBL/CFOP del 3x3.</p>
+                    
+                    <h4>4. Paridad OLL (Cruz imposible)</h4>
+                    <div class="algorithm">
+                        <div class="algorithm-title">Algoritmo:</div>
+                        <div>r U2 x r U2 r U2 r' U2 l U2 r' U2 r U2 r' U2 r'</div>
+                    </div>
+                    
+                    <h4>5. Paridad PLL (2 aristas cambiadas)</h4>
+                    <div class="algorithm">
+                        <div class="algorithm-title">Algoritmo:</div>
+                        <div>Rw2 U2 Rw2 Uw2 Rw2 Uw2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Métodos Avanzados -->
+        <div class="cube-section">
+            <div class="section-header">
+                <i class="fas fa-star section-icon"></i>
+                <h2 class="section-title">🔰 Métodos Avanzados</h2>
+            </div>
+            
+            <div class="step">
+                <h3 class="step-title"><i class="fas fa-tachometer-alt"></i> Resumen de Métodos</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cubo</th>
+                                <th>Nivel</th>
+                                <th>Método</th>
+                                <th>Algoritmos Clave</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2"><strong>2x2</strong></td>
+                                <td>Intermedio</td>
+                                <td><strong>Ortega</strong></td>
+                                <td>7 OLLs + 7 PBLs (ej: PBL: `R2 U2 R2 U2 R2`)</td>
+                            </tr>
+                            <tr>
+                                <td>Avanzado</td>
+                                <td><strong>CLL/EG</strong></td>
+                                <td>42 algoritmos para última capa</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2"><strong>3x3</strong></td>
+                                <td>Intermedio</td>
+                                <td><strong>CFOP</strong></td>
+                                <td>F2L intuitivo + 10 OLLs 2-look + 6 PLLs 2-look</td>
+                            </tr>
+                            <tr>
+                                <td>Avanzado</td>
+                                <td><strong>Roux/ZZ</strong></td>
+                                <td>CMLL (42 algos) / EOLine</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2"><strong>4x4</strong></td>
+                                <td>Intermedio</td>
+                                <td><strong>Yau</strong></td>
+                                <td>Centros laterales → 3 aristas → centros restantes</td>
+                            </tr>
+                            <tr>
+                                <td>Avanzado</td>
+                                <td><strong>Hoya</strong></td>
+                                <td>2 centros opuestos → aristas → bloques</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Consejos Generales -->
+        <div class="cube-section">
+            <div class="section-header">
+                <i class="fas fa-lightbulb section-icon"></i>
+                <h2 class="section-title">💡 Consejos Generales</h2>
+            </div>
+            
+            <div class="step">
+                <div class="step-content">
+                    <div class="tip-box">
+                        <h3 class="tip-title"><i class="fas fa-check-circle"></i> ¡Recuerda!</h3>
+                        <p>La clave es la paciencia. Empieza con el 3x3, domina el método principiante, y luego avanza a técnicas más rápidas. ¡Cada solución es un logro! 🎯</p>
+                    </div>
+                    
+                    <h4>1. Notación</h4>
+                    <p>Domina F, R, U y movimientos primos (`'`) primero.</p>
+                    
+                    <h4>2. Finger Tricks</h4>
+                    <p>Usa dedos índice/medio para giros U y R.</p>
+                    
+                    <h4>3. Práctica</h4>
+                    <ul style="margin: 1rem 0 1rem 2rem;">
+                        <li><strong>Principiantes:</strong> Resuelve capa por capa sin tiempos.</li>
+                        <li><strong>Intermedios:</strong> Enfócate en F2L intuitivo (3x3) o emparejamiento de aristas (4x4).</li>
+                        <li><strong>Avanzados:</strong> Aprende 1-2 algoritmos nuevos por sesión.</li>
+                    </ul>
+                    
+                    <h4>4. Recursos Recomendados</h4>
+                    <div class="resources">
+                        <div class="resource-card">
+                            <div class="resource-title">CubeStation</div>
+                            <p>Simulador y trainers para practicar algoritmos.</p>
+                            <a href="https://www.cubestation.org/" class="btn" target="_blank">Visitar</a>
+                        </div>
+                        <div class="resource-card">
+                            <div class="resource-title">J Perm</div>
+                            <p>Tutoriales en YouTube para todos los niveles.</p>
+                            <a href="https://www.youtube.com/c/JPerm" class="btn" target="_blank">Visitar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+            <a href="#"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <p>&copy; 2025 Cube Center - Todos los derechos reservados</p>
+        <p>El lugar perfecto para los amantes de los cubos de Rubik</p>
+    </footer>
+
+    <script>
+        // Menu mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuIcon = document.getElementById('menu-icon');
+            const navList = document.getElementById('nav-list');
+            
+            menuIcon.addEventListener('click', function() {
+                navList.classList.toggle('active');
+            });
+            
+            // Crear cubos flotantes de fondo
+            const floatingContainer = document.getElementById('floating-cubes');
+            const colors = ['#ff4136', '#0074d9', '#2ecc40', '#ffdc00', '#ff851b', '#ffffff'];
+            
+            for (let i = 0; i < 30; i++) {
+                const cube = document.createElement('div');
+                cube.classList.add('floating-cube');
+                
+                // Tamaño aleatorio
+                const size = Math.random() * 30 + 10;
+                cube.style.width = `${size}px`;
+                cube.style.height = `${size}px`;
+                
+                // Color aleatorio
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                cube.style.backgroundColor = color;
+                
+                // Posición inicial aleatoria
+                cube.style.left = `${Math.random() * 100}%`;
+                cube.style.top = `${Math.random() * 100}%`;
+                
+                // Animación con retraso aleatorio
+                cube.style.animationDelay = `${Math.random() * 15}s`;
+                
+                floatingContainer.appendChild(cube);
+            }
+        });
+    </script>
+</body>
+</html>
